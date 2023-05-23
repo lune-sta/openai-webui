@@ -11,7 +11,10 @@
       {
         devShells = rec {
             default = pkgs.mkShell {
-                buildInputs = [pkgs.poetry];
+                buildInputs = [
+                    pkgs.poetry
+                    pkgs.nodejs_20
+                ];
             };
         };
       }
