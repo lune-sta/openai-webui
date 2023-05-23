@@ -1,0 +1,6 @@
+flask
+flask-cors
+peewee
+requests
+openai
+urllib3==1.26.6
