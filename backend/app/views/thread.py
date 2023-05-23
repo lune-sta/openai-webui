@@ -4,12 +4,8 @@ import json
 from flask import Blueprint, request
 import openai
 
-from app.secrets import API_KEY
-
-
 thread_router = Blueprint('thread_router', __name__)
 logger = logging.getLogger(__name__)
-openai.api_key = API_KEY
 
 
 @thread_router.route('/messages', methods=['POST'])
@@ -17,7 +13,7 @@ def post_messages() -> str:
     message = request.form.get("message")
 
     messages = [{"role": "system", "content": "いい感じに質問に答えてください."}, {
-        "rolle": "user",
+        "role": "user",
         "content": message,
     }]
 
