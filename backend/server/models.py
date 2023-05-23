@@ -1,6 +1,6 @@
 import os
-from peewee import *
 
+from peewee import *
 
 if os.environ["ENV"] == "test":
     db = SqliteDatabase(":memory:")

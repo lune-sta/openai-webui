@@ -1,10 +1,10 @@
 import logging
 
-from flask import Blueprint, Response, request, jsonify
 import openai
 import ulid
+from flask import Blueprint, Response, jsonify, request
 
-from server.models import db, Thread, Message
+from server.models import Message, Thread, db
 from server.presets import get_preset
 
 threads_router = Blueprint("threads_router", __name__)
