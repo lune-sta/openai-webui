@@ -10,12 +10,12 @@
       let pkgs = nixpkgs.legacyPackages.${system}; in
       {
         devShells = rec {
-            default = pkgs.mkShell {
-                buildInputs = [
-                    pkgs.poetry
-                    pkgs.nodejs_20
-                ];
-            };
+          default = pkgs.mkShell {
+            buildInputs = [
+              pkgs.poetry
+              pkgs.nodejs_20
+            ];
+          };
         };
       }
     );
