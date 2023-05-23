@@ -178,4 +178,4 @@ pyrightconfig.json
 
 
 # project specific
-app/secrets.py
+server/secrets.py
