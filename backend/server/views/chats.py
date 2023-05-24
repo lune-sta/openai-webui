@@ -52,7 +52,9 @@ def get_chats():
     user_id = request.headers.get("user-id")
     chats = [
         {"chat_id": chat.chat_id, "title": chat.title}
-        for chat in Chat.select().where(Chat.user_id == user_id)
+        for chat in Chat.select()
+        .where(Chat.user_id == user_id)
+        .order_by(Chat.created_at.desc())
     ]
     result = {"chats": chats}
 
@@ -70,7 +72,7 @@ def get_messages(chat_id: str):
         for message in Message.select()
         .join(Chat)
         .where(Chat.chat_id == chat_id)
-        .order_by(Message.message_id)
+        .order_by(Message.created_at.desc())
     ]
     result = {"messages": messages}
 
@@ -88,7 +90,7 @@ def post_message(chat_id: str) -> Response:
         for message in Message.select()
         .join(Chat)
         .where(Chat.chat_id == chat_id)
-        .order_by(Message.message_id)
+        .order_by(Message.created_at.desc())
     ]
 
     messages.append({"role": "user", "content": content})

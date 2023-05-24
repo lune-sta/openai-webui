@@ -3,7 +3,7 @@ from datetime import datetime
 
 from peewee import *
 
-if 'ENV' in os.environ and os.environ["ENV"] == "test":
+if "ENV" in os.environ and os.environ["ENV"] == "test":
     db = SqliteDatabase(":memory:")
 else:
     db = SqliteDatabase("sqlite.db")
