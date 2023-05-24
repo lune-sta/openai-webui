@@ -178,4 +178,5 @@ pyrightconfig.json
 
 
 # project specific
-app/secrets.py
+sqlite.db
+
