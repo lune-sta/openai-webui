@@ -56,6 +56,7 @@ def get_chats():
         for chat in Chat.select()
         .where(Chat.user_id == user_id)
         .order_by(Chat.created_at.desc())
+        .limit(10)
     ]
     result = {"chats": chats}
 
@@ -72,7 +73,7 @@ def get_messages(chat_id: str):
         }
         for message in Message.select()
         .join(Chat)
-        .where(Chat.chat_id == chat_id)
+        .where((Chat.chat_id == chat_id) & (Message.role != "system"))
         .order_by(Message.created_at.asc())
     ]
     result = {"messages": messages}
