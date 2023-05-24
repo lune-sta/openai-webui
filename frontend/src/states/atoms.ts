@@ -49,3 +49,33 @@ export const useCreateChat = () => {
     setMessages((oldMessages: Message[]) => [...oldMessages, data])
   }
 }
+
+export const useAddMessage = () => {
+  const [userId] = useAtom(userIdAtom)
+  const [chatId] = useAtom(chatIdAtom)
+  const [, setMessages] = useAtom(messagesAtom)
+
+  return async (text: string) => {
+    if (!userId) {
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('content', text)
+
+    setMessages((oldMessages: Message[]) => [
+      ...oldMessages,
+      {
+        role: 'user',
+        content: text,
+      },
+    ])
+    const response = await fetch(baseUrl + `/chats/${chatId}/messages`, {
+      method: 'POST',
+      headers: { 'user-id': userId },
+      body: formData,
+    })
+    const data = await response.json()
+    setMessages((oldMessages: Message[]) => [...oldMessages, data])
+  }
+}

@@ -9,8 +9,10 @@ import AssistantIcon from '@mui/icons-material/Assistant'
 import { useState } from 'react'
 import { useAtom } from 'jotai'
 import {
+  chatIdAtom,
   Message,
   messagesAtom,
+  useAddMessage,
   useCreateChat,
   userIdAtom,
 } from './states/atoms'
@@ -57,12 +59,19 @@ function MessageBox({ children }: MessageProps) {
 
 export default function Chat() {
   const [userId] = useAtom(userIdAtom)
+  const [chatId] = useAtom(chatIdAtom)
   const [messages] = useAtom(messagesAtom)
   const [text, setText] = useState('')
 
   const createChat = useCreateChat()
+  const addMessage = useAddMessage()
+
   const handleButtonClick = async () => {
-    await createChat(text)
+    if (!chatId) {
+      await createChat(text)
+    } else {
+      await addMessage(text)
+    }
     setText('')
   }
   return (
