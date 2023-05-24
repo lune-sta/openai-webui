@@ -40,6 +40,7 @@ def create_chat():
                 role=init_message["role"],
                 content=init_message["content"],
                 chat=chat,
+                preset=preset,
             )
             message.save(force_insert=True)
 
@@ -72,7 +73,7 @@ def get_messages(chat_id: str):
         for message in Message.select()
         .join(Chat)
         .where(Chat.chat_id == chat_id)
-        .order_by(Message.created_at.desc())
+        .order_by(Message.created_at.asc())
     ]
     result = {"messages": messages}
 
@@ -90,12 +91,31 @@ def post_message(chat_id: str) -> Response:
         for message in Message.select()
         .join(Chat)
         .where(Chat.chat_id == chat_id)
-        .order_by(Message.created_at.desc())
+        .order_by(Message.created_at.asc())
     ]
 
     messages.append({"role": "user", "content": content})
 
     preset = get_preset(chat.preset)
-
     res = openai.ChatCompletion.create(model=preset.openai_model, messages=messages)
+
+    with db.transaction():
+        user_message = Message(
+            message_id=uuid.uuid4(),
+            role="user",
+            content=content,
+            chat=chat,
+            preset=preset,
+        )
+        user_message.save(force_insert=True)
+
+        assistant_message = Message(
+            message_id=uuid.uuid4(),
+            role="assistant",
+            content=res["choices"][0]["message"]["content"],
+            chat=chat,
+            preset=preset,
+        )
+        assistant_message.save(force_insert=True)
+
     return jsonify(res["choices"][0]["message"])
