@@ -91,6 +91,12 @@ export default function Chat() {
           placeholder={'Write your message here.'}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={async (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+              await handleButtonClick()
+              e.preventDefault()
+            }
+          }}
         />
         <Box
           sx={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 2 }}
