@@ -9,12 +9,13 @@ import AssistantIcon from '@mui/icons-material/Assistant'
 import { useState } from 'react'
 import { useAtom } from 'jotai'
 import {
-  chatIdAtom,
-  Message,
-  messagesAtom,
-  useAddMessage,
-  useCreateChat,
   userIdAtom,
+  loadingAtom,
+  chatIdAtom,
+  messagesAtom,
+  Message,
+  useCreateChat,
+  useAddMessage,
 } from './states/atoms'
 
 const maxWidth = '800px'
@@ -59,6 +60,7 @@ function MessageBox({ children }: MessageProps) {
 
 export default function Chat() {
   const [userId] = useAtom(userIdAtom)
+  const [isLoading] = useAtom(loadingAtom)
   const [chatId] = useAtom(chatIdAtom)
   const [messages] = useAtom(messagesAtom)
   const [text, setText] = useState('')
@@ -101,9 +103,15 @@ export default function Chat() {
         <Box
           sx={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 2 }}
         >
-          <Button variant="contained" onClick={handleButtonClick}>
-            Submit
-          </Button>
+          {isLoading ? (
+            <Button variant="contained" disabled={true}>
+              Submit
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={handleButtonClick}>
+              Submit
+            </Button>
+          )}
         </Box>
       </Box>
       <Typography

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { createTheme, Shadows, ThemeProvider } from '@mui/material/styles'
 import { BrowserRouter } from 'react-router-dom'
@@ -19,7 +19,7 @@ import MyDrawer from './components/MyDrawer'
 import Loader from './components/Loader'
 import Chat from './Chat'
 import { useWindowSize } from './states/windowSize'
-import { userIdAtom } from './states/atoms'
+import { loadingAtom, userIdAtom } from './states/atoms'
 
 const theme = createTheme({
   palette: {
@@ -33,6 +33,7 @@ const theme = createTheme({
 
 export default function App() {
   const [width, _] = useWindowSize()
+  const [isLoading] = useAtom(loadingAtom)
   const [, setUserId] = useAtom(userIdAtom)
 
   useEffect(() => {
@@ -64,26 +65,25 @@ export default function App() {
   )
 
   return (
-    <React.Suspense fallback={<Loader />}>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <MyAppBar />
-            <MyDrawer>{drawer}</MyDrawer>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                width: { sm: `calc(${width}px - ${drawerWidth}px)` },
-              }}
-            >
-              <Toolbar />
-              <Chat />
-            </Box>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        {isLoading && <Loader />}
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          <MyAppBar />
+          <MyDrawer>{drawer}</MyDrawer>
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              width: { sm: `calc(${width}px - ${drawerWidth}px)` },
+            }}
+          >
+            <Toolbar />
+            <Chat />
           </Box>
-        </ThemeProvider>
-      </BrowserRouter>
-    </React.Suspense>
+        </Box>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }
