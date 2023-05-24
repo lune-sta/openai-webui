@@ -178,4 +178,5 @@ pyrightconfig.json
 
 
 # project specific
+sqlite.db
 

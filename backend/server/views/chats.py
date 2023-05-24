@@ -1,13 +1,13 @@
 import logging
+import uuid
 
 import openai
-import ulid
 from flask import Blueprint, Response, jsonify, request
 
-from server.models import Message, Thread, db
+from server.models import Message, Chat, db
 from server.presets import get_preset
 
-threads_router = Blueprint("threads_router", __name__)
+chats_router = Blueprint("chats_router", __name__)
 logger = logging.getLogger(__name__)
 
 
@@ -18,49 +18,49 @@ def generate_title(content: str) -> str:
         return content[0:20] + "..."
 
 
-@threads_router.route("/threads", methods=["POST"])
-def create_thread():
-    user_id = request.headers.get("user-id")
-    content = request.form.get("content")
+@chats_router.route("/chats", methods=["POST"])
+def create_chat():
+    user_id = request.headers["user-id"]
+    content = request.form["content"]
     preset = "gpt-3.5-default"
 
-    thread = Thread(
-        thread_id=ulid.ulid(),
+    chat = Chat(
+        chat_id=uuid.uuid4(),
         user_id=user_id,
         title=generate_title(content),
         preset=preset,
     )
-    thread.save()
+    chat.save(force_insert=True)
 
     preset = get_preset(preset)
     for init_message in preset.init_messages():
         with db.transaction():
             message = Message(
-                message_id=ulid.ulid(),
+                message_id=uuid.uuid4(),
                 role=init_message["role"],
                 content=init_message["content"],
-                thread=thread,
+                chat=chat,
             )
-            message.save()
+            message.save(force_insert=True)
 
-    result = {"thread_id": thread.thread_id, "title": thread.title}
+    result = {"chat_id": chat.chat_id, "title": chat.title}
     return jsonify(result)
 
 
-@threads_router.route("/threads", methods=["GET"])
-def get_threads():
+@chats_router.route("/chats", methods=["GET"])
+def get_chats():
     user_id = request.headers.get("user-id")
-    threads = [
-        {"thread_id": thread.thread_id, "title": thread.title}
-        for thread in Thread.select().where(Thread.user_id == user_id)
+    chats = [
+        {"chat_id": chat.chat_id, "title": chat.title}
+        for chat in Chat.select().where(Chat.user_id == user_id)
     ]
-    result = {"threads": threads}
+    result = {"chats": chats}
 
     return jsonify(result)
 
 
-@threads_router.route("/threads/<thread_id>", methods=["GET"])
-def get_messages(thread_id: str):
+@chats_router.route("/chats/<chat_id>/messages", methods=["GET"])
+def get_messages(chat_id: str):
     messages = [
         {
             "message_id": message.message_id,
@@ -68,8 +68,8 @@ def get_messages(thread_id: str):
             "content": message.content,
         }
         for message in Message.select()
-        .join(Thread)
-        .where(Thread.thread_id == thread_id)
+        .join(Chat)
+        .where(Chat.chat_id == chat_id)
         .order_by(Message.message_id)
     ]
     result = {"messages": messages}
@@ -77,22 +77,23 @@ def get_messages(thread_id: str):
     return jsonify(result)
 
 
-@threads_router.route("/threads/<thread_id>/messages", methods=["POST"])
-def post_message(thread_id: str) -> Response:
+@chats_router.route("/chats/<chat_id>/messages", methods=["POST"])
+def post_message(chat_id: str) -> Response:
     content = request.form["content"]
-    thread = Thread.get(thread_id=thread_id)
+
+    chat = Chat.get(Chat.chat_id == chat_id)
 
     messages = [
         {"role": message.role, "content": message.content}
         for message in Message.select()
-        .join(Thread)
-        .where(Thread.thread_id == thread_id)
+        .join(Chat)
+        .where(Chat.chat_id == chat_id)
         .order_by(Message.message_id)
     ]
 
     messages.append({"role": "user", "content": content})
 
-    preset = get_preset(thread.preset)
+    preset = get_preset(chat.preset)
 
     res = openai.ChatCompletion.create(model=preset.openai_model, messages=messages)
     return jsonify(res["choices"][0]["message"])

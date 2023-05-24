@@ -13,16 +13,16 @@ def client():
         yield client
 
 
-def test_create_thread(client):
+def test_create_chat(client):
     user_id = "test_user_id"
     headers = {"user-id": user_id}
     data = {"content": "赤ちゃんはどこから来るの？"}
 
-    create_thread_response = client.post("/threads", headers=headers, data=data)
-    assert create_thread_response.status_code == 200
-    thread_id = create_thread_response.json["thread_id"]
+    create_chat_response = client.post("/chats", headers=headers, data=data)
+    assert create_chat_response.status_code == 200
+    chat_id = create_chat_response.json["chat_id"]
 
     post_message_response = client.post(
-        f"/threads/{thread_id}/messages", headers=headers, data=data
+        f"/chats/{chat_id}/messages", headers=headers, data=data
     )
     assert post_message_response.status_code == 200
