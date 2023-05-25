@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { createTheme, Shadows, ThemeProvider } from '@mui/material/styles'
 import { BrowserRouter } from 'react-router-dom'
@@ -26,6 +26,7 @@ import {
   userIdAtom,
   useSwitchChat,
 } from './states/atoms'
+import { loadingAtom, userIdAtom } from './states/atoms'
 
 const theme = createTheme({
   palette: {
@@ -38,11 +39,12 @@ const theme = createTheme({
 })
 
 export default function App() {
-  const [width] = useWindowSize()
+  const [width,] = useWindowSize()
   const [userId, setUserId] = useAtom(userIdAtom)
   const getChats = useGetChats()
   const [chats] = useAtom(chatsAtom)
   const switchChat = useSwitchChat()
+  const [isLoading] = useAtom(loadingAtom)
 
   useEffect(() => {
     // 初回アクセス時に UserID を生成する
@@ -97,26 +99,25 @@ export default function App() {
   )
 
   return (
-    <React.Suspense fallback={<Loader />}>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <MyAppBar />
-            <MyDrawer>{drawer}</MyDrawer>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                width: { sm: `calc(${width}px - ${drawerWidth}px)` },
-              }}
-            >
-              <Toolbar />
-              <Chat />
-            </Box>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        {isLoading && <Loader />}
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          <MyAppBar />
+          <MyDrawer>{drawer}</MyDrawer>
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              width: { sm: `calc(${width}px - ${drawerWidth}px)` },
+            }}
+          >
+            <Toolbar />
+            <Chat />
           </Box>
-        </ThemeProvider>
-      </BrowserRouter>
-    </React.Suspense>
+        </Box>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }

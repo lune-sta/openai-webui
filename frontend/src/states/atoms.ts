@@ -6,6 +6,7 @@ const baseUrl = 'http://localhost:8080'
 
 export const userIdAtom = atom<string | null>(null)
 export const chatIdAtom = atom<string | null>(null)
+export const loadingAtom = atom<boolean>(false)
 
 export type Message = {
   role: string
@@ -20,6 +21,7 @@ export type Chat = {
 export const chatsAtom = atom<Chat[]>([])
 export const useCreateChat = () => {
   const [userId] = useAtom(userIdAtom)
+  const [, setLoading] = useAtom(loadingAtom)
   const [, setChatId] = useAtom(chatIdAtom)
   const [, setMessages] = useAtom(messagesAtom)
 
@@ -27,6 +29,7 @@ export const useCreateChat = () => {
     if (!userId) {
       return
     }
+    setLoading(true)
 
     const formData = new FormData()
     formData.append('content', text)
@@ -53,11 +56,13 @@ export const useCreateChat = () => {
     })
     data = await response.json()
     setMessages((oldMessages: Message[]) => [...oldMessages, data])
+    setLoading(false)
   }
 }
 
 export const useAddMessage = () => {
   const [userId] = useAtom(userIdAtom)
+  const [, setLoading] = useAtom(loadingAtom)
   const [chatId] = useAtom(chatIdAtom)
   const [, setMessages] = useAtom(messagesAtom)
 
@@ -65,6 +70,7 @@ export const useAddMessage = () => {
     if (!userId) {
       return
     }
+    setLoading(true)
 
     const formData = new FormData()
     formData.append('content', text)
@@ -83,6 +89,7 @@ export const useAddMessage = () => {
     })
     const data = await response.json()
     setMessages((oldMessages: Message[]) => [...oldMessages, data])
+    setLoading(false)
   }
 }
 
