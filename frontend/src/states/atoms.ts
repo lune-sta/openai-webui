@@ -33,6 +33,7 @@ export const useCreateChat = () => {
 
     const formData = new FormData()
     formData.append('content', text)
+    formData.append('preset', 'gpt-3.5-default')
 
     let response = await fetch(baseUrl + '/chats', {
       method: 'POST',
