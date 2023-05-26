@@ -15,6 +15,8 @@ import {
   messagesAtom,
   Message,
   useCreateChat,
+  useGetChats,
+  userIdAtom,
   useAddMessage,
 } from './states/atoms'
 
@@ -67,15 +69,17 @@ export default function Chat() {
 
   const createChat = useCreateChat()
   const addMessage = useAddMessage()
+  const getChats = useGetChats()
 
   const handleButtonClick = async () => {
     if (!chatId) {
-      await createChat(text)
+      await createChat(text).then(() => getChats())
     } else {
       await addMessage(text)
     }
     setText('')
   }
+
   return (
     <Container maxWidth={false} disableGutters>
       {messages.map((message, index) => (
