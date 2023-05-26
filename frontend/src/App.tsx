@@ -13,12 +13,19 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import ChatIcon from '@mui/icons-material/Chat'
+import AddCommentIcon from '@mui/icons-material/AddComment'
 import shadows from '@mui/material/styles/shadows'
 import MyAppBar, { drawerWidth } from './components/MyAppBar'
 import MyDrawer from './components/MyDrawer'
 import Loader from './components/Loader'
 import Chat from './Chat'
 import { useWindowSize } from './states/windowSize'
+import {
+  chatsAtom,
+  useGetChats,
+  userIdAtom,
+  useSwitchChat,
+} from './states/atoms'
 import { loadingAtom, userIdAtom } from './states/atoms'
 
 const theme = createTheme({
@@ -32,9 +39,12 @@ const theme = createTheme({
 })
 
 export default function App() {
-  const [width, _] = useWindowSize()
+  const [width,] = useWindowSize()
+  const [userId, setUserId] = useAtom(userIdAtom)
+  const getChats = useGetChats()
+  const [chats] = useAtom(chatsAtom)
+  const switchChat = useSwitchChat()
   const [isLoading] = useAtom(loadingAtom)
-  const [, setUserId] = useAtom(userIdAtom)
 
   useEffect(() => {
     // 初回アクセス時に UserID を生成する
@@ -46,21 +56,45 @@ export default function App() {
     setUserId(currentUserId)
   }, [])
 
+  useEffect(() => {
+    if (userId) {
+      getChats().then(() => {})
+    }
+  }, [userId])
+
   const drawer = (
     <div>
       <Toolbar />
       <Divider />
-      <List>
-        <ListItem key="New Chat" disablePadding>
+      <List sx={{ p: 0 }}>
+        <ListItem
+          key="New Chat"
+          disablePadding
+          onClick={() => switchChat(null)}
+          sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}
+        >
           <ListItemButton>
             <ListItemIcon>
-              <ChatIcon />
+              <AddCommentIcon style={{ color: '#ffffff' }} />
             </ListItemIcon>
             <ListItemText primary="New Chat" />
           </ListItemButton>
         </ListItem>
+        <Divider />
+        {chats.map((chat) => (
+          <Box key={chat.chat_id}>
+            <ListItem disablePadding onClick={() => switchChat(chat.chat_id)}>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ChatIcon />
+                </ListItemIcon>
+                <ListItemText primary={chat.title} />
+              </ListItemButton>
+            </ListItem>
+            <Divider />
+          </Box>
+        ))}
       </List>
-      <Divider />
     </div>
   )
 
