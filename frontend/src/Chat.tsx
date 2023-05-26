@@ -1,23 +1,22 @@
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import { Button } from '@mui/material'
-import PersonIcon from '@mui/icons-material/Person'
 import AssistantIcon from '@mui/icons-material/Assistant'
-import { useState } from 'react'
+import PersonIcon from '@mui/icons-material/Person'
+import { Button } from '@mui/material'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useAtom } from 'jotai'
+import { useState } from 'react'
 import {
-  userIdAtom,
-  loadingAtom,
-  chatIdAtom,
-  messagesAtom,
   Message,
+  chatIdAtom,
+  loadingAtom,
+  messagesAtom,
+  useAddMessage,
   useCreateChat,
   useGetChats,
   userIdAtom,
-  useAddMessage,
 } from './states/atoms'
 
 const maxWidth = '800px'
