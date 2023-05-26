@@ -1,32 +1,32 @@
-import { useEffect } from 'react'
-import { useAtom } from 'jotai'
-import { createTheme, Shadows, ThemeProvider } from '@mui/material/styles'
-import { BrowserRouter } from 'react-router-dom'
-import { v4 as uuidv4 } from 'uuid'
-import CssBaseline from '@mui/material/CssBaseline'
+import AddCommentIcon from '@mui/icons-material/AddComment'
+import ChatIcon from '@mui/icons-material/Chat'
 import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
+import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
+import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import ChatIcon from '@mui/icons-material/Chat'
-import AddCommentIcon from '@mui/icons-material/AddComment'
+import { createTheme, Shadows, ThemeProvider } from '@mui/material/styles'
 import shadows from '@mui/material/styles/shadows'
+import Toolbar from '@mui/material/Toolbar'
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
+import { BrowserRouter } from 'react-router-dom'
+import { v4 as uuidv4 } from 'uuid'
+import Chat from './Chat'
+import Loader from './components/Loader'
 import MyAppBar, { drawerWidth } from './components/MyAppBar'
 import MyDrawer from './components/MyDrawer'
-import Loader from './components/Loader'
-import Chat from './Chat'
-import { useWindowSize } from './states/windowSize'
 import {
   chatsAtom,
+  loadingAtom,
   useGetChats,
   userIdAtom,
   useSwitchChat,
 } from './states/atoms'
-import { loadingAtom, userIdAtom } from './states/atoms'
+import { useWindowSize } from './states/windowSize'
 
 const theme = createTheme({
   palette: {
@@ -39,7 +39,7 @@ const theme = createTheme({
 })
 
 export default function App() {
-  const [width,] = useWindowSize()
+  const [width] = useWindowSize()
   const [userId, setUserId] = useAtom(userIdAtom)
   const getChats = useGetChats()
   const [chats] = useAtom(chatsAtom)
