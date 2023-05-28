@@ -4,7 +4,7 @@ import uuid
 import openai
 from flask import Blueprint, Response, jsonify, request
 
-from server.models import Message, Chat, db
+from server.models import Chat, Message, db
 from server.presets import get_preset
 
 chats_router = Blueprint("chats_router", __name__)
@@ -22,7 +22,7 @@ def generate_title(content: str) -> str:
 def create_chat():
     user_id = request.headers["user-id"]
     content = request.form["content"]
-    preset = "gpt-3.5-default"
+    preset = request.form["preset"]
 
     chat = Chat(
         chat_id=uuid.uuid4(),
@@ -98,7 +98,7 @@ def post_message(chat_id: str) -> Response:
     messages.append({"role": "user", "content": content})
 
     preset = get_preset(chat.preset)
-    res = openai.ChatCompletion.create(model=preset.openai_model, messages=messages)
+    res = preset.create_compleation(messages)
 
     with db.transaction():
         user_message = Message(
