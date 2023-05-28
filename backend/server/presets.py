@@ -41,14 +41,9 @@ class Gpt35AzurePreset(_PresetBase):
         openai.api_version = "2023-05-15"
         azure_openai_deploy_name = os.environ.get("AZURE_OPENAI_DEPLOY_NAME")
 
-        try:
-            res = openai.ChatCompletion.create(
-                deployment_id=azure_openai_deploy_name, messages=messages
-            )
-        except openai.error.PermissionError:
-            res["choices"][0]["message"][
-                "content"
-            ] = "Access denied due to Virtual Network/Firewall rules."
+        res = openai.ChatCompletion.create(
+            deployment_id=azure_openai_deploy_name, messages=messages
+        )
         return res
 
 
